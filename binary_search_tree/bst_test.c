@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "binary_search_tree.h"
+#include "bst.h"
 
 void create_ordered_tree(node *tree, int num) {
     int i, ret;

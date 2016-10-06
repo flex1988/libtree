@@ -1,9 +1,9 @@
-all: tree_testtree_test
+all: bst.test
 
-binary_search_tree.o:binary_search_tree.c binary_search_tree.h
+bst.o:bst.c bst.h
 
-tree_testtree_test:binary_search_tree.o
-	gcc -g -o test tree_test.c binary_search_tree.o
+bst.test:bst.o
+	gcc -g -o bst.test bst_test.c bst.o
 
 clean:
 	rm *.o *.gch test

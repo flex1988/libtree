@@ -1,4 +1,4 @@
-#include "binary_search_tree.h"
+#include "bst.h"
 #include "assert.h"
 #include "stdlib.h"
 
