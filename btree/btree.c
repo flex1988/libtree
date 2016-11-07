@@ -7,52 +7,51 @@ Tree *btree_create(const char *path) {
         return NULL;
     n->leaf = true;
     n->nodes = 0;
-    //disk_write(n, path);
     tree->root = n;
-    tree->idxfd = -1;
-    tree->datafd = -1;
+    tree->idx = NULL;
+    tree->data = NULL;
 
-    char index[100];
-    strcat(index,path);
-    strcat(index, "db.index");
-    int fd = open(index, O_CREAT | O_WRONLY | O_EXCL, S_IRUSR | S_IWUSR);
-    
-    if (fd < 0) {
-        
-        if (errno == EEXIST) {
-            printf("%d",errno);
-            tree->idxfd = open(index, O_WRONLY | O_EXCL, S_IRUSR | S_IWUSR);
-        }
+    tree->idx = fopen("./db.index", "w+");
+
+    if (!tree->idx) {
+        printf("open index file failed %s\n", strerror(errno));
         goto error;
-    } else {
-        tree->idxfd = fd;
     }
-    
-    char data[100];
-    strcat(data,path);
-    strcat(data, "db.data");
-    fd = open(data, O_CREAT | O_WRONLY | O_EXCL, S_IRUSR | S_IWUSR);
-    if (fd < 0) {
-        if (errno == EEXIST) {
-            tree->datafd = open(data, O_WRONLY | O_EXCL, S_IRUSR | S_IWUSR);
-        }
+
+    tree->data = fopen("./db.data", "w+");
+
+    if (!tree->data) {
+        printf("open data file failed %s\n", strerror(errno));
         goto error;
-    } else {
-        tree->datafd = fd;
+    }
+
+    if (!disk_write(tree->idx, 0, n)) {
+        printf("write node to disk failed %s\n", strerror(errno));
+        goto error;
     }
     return tree;
 
 error:
     free(tree->root);
-    close(tree->idxfd);
-    close(tree->datafd);
+    fclose(tree->idx);
+    fclose(tree->data);
     free(tree);
     return NULL;
 }
 
-Node* allocate_node(){
+Node *allocate_node() {
     Node *n = (Node *)malloc(sizeof(Node));
     return n;
 }
 
-//bool disk_write(Node *n) { return true; }
+bool disk_write(FILE *p, size_t pos, Node *n) {
+    fseek(p,pos,SEEK_SET);
+    size_t r = fwrite(n, sizeof(Node), 1, p);
+    return r == 1;
+}
+
+
+/*bool disk_write_index(FILE *p, size_t pos, Node *n) {*/
+/*size_t r = fwrite(n, sizeof(Node), 1, p);*/
+/*return r == sizeof(Node);*/
+/*}*/

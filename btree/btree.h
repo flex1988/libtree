@@ -20,14 +20,14 @@ typedef struct {
     int height;
     int t;
     Node* root;
-    int idxfd;
-    int datafd;
+    FILE *idx;
+    FILE *data;
 } Tree;
 
 Tree* btree_create(const char *path);
 //Node* btree_search(uint64_t key);
 Node* allocate_node();
 
-//bool disk_write(Node* n, char* path);
+bool disk_write(FILE *p, size_t pos, Node *n);
 //bool disk_read(Node* n, char* path);
 #endif

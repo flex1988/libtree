@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int main(){
-    Tree *t = btree_create("./");
+    Tree *t = btree_create("/tmp/");
     if(!t){
         printf("create btree failed!");
         return 0;
