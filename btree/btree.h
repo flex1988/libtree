@@ -1,13 +1,13 @@
 #ifndef __BTREE__
 #define __BTREE__
-#include <stdint.h>
-#include <stdlib.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdbool.h>
-#include <stdio.h>
 
 typedef struct {
     bool leaf;
@@ -19,15 +19,15 @@ typedef struct {
 typedef struct {
     int height;
     int t;
-    Node* root;
+    Node *root;
     FILE *idx;
     FILE *data;
 } Tree;
 
-Tree* btree_create(const char *path);
-//Node* btree_search(uint64_t key);
-Node* allocate_node();
+Tree *btree_create();
+Node *btree_search(Node *n, Tree *t, uint64_t key, uint64_t *index);
+Node *allocate_node();
 
 bool disk_write(FILE *p, size_t pos, Node *n);
-//bool disk_read(Node* n, char* path);
+Node *disk_read(Tree *t, size_t pos);
 #endif
