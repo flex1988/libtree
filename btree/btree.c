@@ -74,6 +74,36 @@ Node *disk_read(Tree *t, size_t pos) {
     return r == 1 ? buf : NULL;
 }
 
+void btree_split_child(Tree *t, Node *n, uint64_t i) {
+    Node *z = allocate_node();
+    Node *y = disk_read(t, x->ptr[i]);
+    z.leaf = y.leaf;
+    z.n = MINIMUM_DEGREE - 1;
+
+    int j;
+    for (j = 0; j < MINIMUM_DEGREE - 1; j++) {
+        z->key[j] = y->key[MINIMUM_DEGREE + j]
+    }
+
+    if (!y->leaf) {
+        for (j = 0; j < MINIMUM_DEGREE; j++) {
+            z->ptr[j] = y->ptr[j + MINIMUM_DEGREE];
+        }
+    }
+
+    y->nodes = MINIMUM_DEGREE - 1;
+
+    for (j = x->nodes; j > i; j--) {
+        x->key[j] = x->key[j - 1];
+    }
+    x->key[i] = y->key[MINIMUM_DEGREE - 1];
+
+    for (j = x->nodes + 1; j > i; j--) {
+        x->ptr[j] = x->key[j - 1];
+    }
+    x->ptr[i + 1] = ;
+}
+
 /*bool disk_write_index(FILE *p, size_t pos, Node *n) {*/
 /*size_t r = fwrite(n, sizeof(Node), 1, p);*/
 /*return r == sizeof(Node);*/

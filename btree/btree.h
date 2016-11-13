@@ -9,11 +9,13 @@
 #include <string.h>
 #include <unistd.h>
 
+#define MINIMUM_DEGREE 100
+
 typedef struct {
     bool leaf;
     int nodes;
-    uint64_t key[1000];
-    uint64_t ptr[1001];
+    uint64_t key[2 * MINIMUM_DEGREE - 1];
+    uint64_t ptr[2 * MINIMUM_DEGREE];
 } Node;
 
 typedef struct {
@@ -30,4 +32,5 @@ Node *allocate_node();
 
 bool disk_write(FILE *p, size_t pos, Node *n);
 Node *disk_read(Tree *t, size_t pos);
+void btree_split_child(Node *n, uint64_t i);
 #endif
