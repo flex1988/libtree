@@ -16,6 +16,7 @@ typedef struct {
     int nodes;
     uint64_t key[2 * MINIMUM_DEGREE - 1];
     uint64_t ptr[2 * MINIMUM_DEGREE];
+    uint64_t pos;
 } Node;
 
 typedef struct {
@@ -24,13 +25,14 @@ typedef struct {
     Node *root;
     FILE *idx;
     FILE *data;
+    uint64_t pos;
 } Tree;
 
 Tree *btree_create();
 Node *btree_search(Node *n, Tree *t, uint64_t key, uint64_t *index);
-Node *allocate_node();
+Node *allocate_node(Tree *t);
 
 bool disk_write(FILE *p, size_t pos, Node *n);
 Node *disk_read(Tree *t, size_t pos);
-void btree_split_child(Node *n, uint64_t i);
+void btree_split_child(Tree *t, Node *x, uint64_t i);
 #endif

@@ -3,7 +3,7 @@
 #include <assert.h>
 
 static void disk_read_write_test(Tree *t){
-    Node *n = allocate_node();
+    Node *n = allocate_node(t);
     assert(n);
     printf("allocate_node test passed\n");
     n->nodes = 1000;

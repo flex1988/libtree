@@ -2,7 +2,7 @@
 
 Tree *btree_create() {
     Tree *tree = (Tree *)malloc(sizeof(Tree));
-    Node *n = allocate_node();
+    Node *n = allocate_node(tree);
     if (!n)
         return NULL;
     n->leaf = true;
@@ -39,8 +39,10 @@ error:
     return NULL;
 }
 
-Node *allocate_node() {
-    Node *n = (Node *)malloc(sizeof(Node));
+Node *allocate_node(Tree *t) {
+    Node *n = (Node *)calloc(1,sizeof(Node));
+    n->pos = t->pos;
+    t->pos += sizeof(n);
     return n;
 }
 
@@ -74,15 +76,15 @@ Node *disk_read(Tree *t, size_t pos) {
     return r == 1 ? buf : NULL;
 }
 
-void btree_split_child(Tree *t, Node *n, uint64_t i) {
-    Node *z = allocate_node();
+void btree_split_child(Tree *t, Node *x, uint64_t i) {
+    Node *z = allocate_node(t);
     Node *y = disk_read(t, x->ptr[i]);
-    z.leaf = y.leaf;
-    z.n = MINIMUM_DEGREE - 1;
+    z->leaf = y->leaf;
+    z->nodes = MINIMUM_DEGREE - 1;
 
     int j;
     for (j = 0; j < MINIMUM_DEGREE - 1; j++) {
-        z->key[j] = y->key[MINIMUM_DEGREE + j]
+        z->key[j] = y->key[MINIMUM_DEGREE + j];
     }
 
     if (!y->leaf) {
@@ -101,7 +103,13 @@ void btree_split_child(Tree *t, Node *n, uint64_t i) {
     for (j = x->nodes + 1; j > i; j--) {
         x->ptr[j] = x->key[j - 1];
     }
-    x->ptr[i + 1] = ;
+    x->ptr[i + 1] = z->pos;
+
+    x->nodes++;
+
+    disk_write(t,y->pos,y);
+    disk_write(t,z->pos,z);
+    disk_write(t,x->pos,x);
 }
 
 /*bool disk_write_index(FILE *p, size_t pos, Node *n) {*/
