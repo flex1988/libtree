@@ -33,8 +33,16 @@ static Tree* btree_create_test(){
     return t;
 }
 
+static void btree_insert_test(Tree *t){
+    uint64_t i;
+    for(i=0;i<10000;i++){
+        btree_insert(t,i);
+    }
+}
+
 int main(){
     Tree *t = btree_create_test();
     disk_read_write_test(t);
+    btree_insert_test(t);
     return 0;
 }

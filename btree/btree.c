@@ -107,11 +107,50 @@ void btree_split_child(Tree *t, Node *x, uint64_t i) {
 
     x->nodes++;
 
-    disk_write(t,y->pos,y);
-    disk_write(t,z->pos,z);
-    disk_write(t,x->pos,x);
+    disk_write(t->idx,y->pos,y);
+    disk_write(t->idx,z->pos,z);
+    disk_write(t->idx,x->pos,x);
 }
 
+void btree_insert(Tree *t,uint64_t key){
+    Node *r = t->root;
+    if(r->nodes == 2*MINIMUM_DEGREE - 1){
+        Node* n = allocate_node(t);
+        t->root = n;
+        n->leaf = false;
+        n->nodes = 0;
+        n->ptr[0] = r->pos;
+        btree_split_child(t,n,1);
+        btree_insert_nonfull(t,n,key);
+    }else{
+        btree_insert_nonfull(t,r,key);
+    }
+}
+
+void btree_insert_nonfull(Tree *t,Node *n,uint64_t key){
+    uint64_t i = n->nodes-1;
+
+    if(n->leaf) {
+        while(i >= 0&&key < n->key[i]){
+            n->key[i] = n->key[i-1];
+            i--;
+        }
+        n->key[i] = key;
+        n->nodes++;
+        disk_write(t->idx,n->pos,n);
+    } else {
+        while(i>=0&&key<n->key[i])
+            i--;
+        i++;
+        Node *next = disk_read(t,n->ptr[i]);
+        if(next->nodes == FULL_NODES){
+            btree_split_child(t,next,i);
+            if(key>next->key[i])
+                i++;
+            btree_insert_nonfull(t,next,key);
+        }    
+    }
+}
 /*bool disk_write_index(FILE *p, size_t pos, Node *n) {*/
 /*size_t r = fwrite(n, sizeof(Node), 1, p);*/
 /*return r == sizeof(Node);*/
