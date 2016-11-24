@@ -165,8 +165,8 @@ btree_insert_nonfull(Tree* t, Node* n, uint64_t key)
         if (next->nodes == FULL_NODES) {
             btree_split_child(t, next, i);
             if (key > next->key[i]) i++;
-            btree_insert_nonfull(t, next, key);
         }
+        btree_insert_nonfull(t, next, key);
     }
 }
 /*bool disk_write_index(FILE *p, size_t pos, Node *n) {*/
