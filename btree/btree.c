@@ -54,7 +54,6 @@ allocate_node(Tree* t)
 bool
 disk_write(FILE* p, size_t pos, Node* n)
 {
-    printf("%d",pos);
     fseek(p, pos, SEEK_SET);
     size_t r = fwrite(n, sizeof(Node), 1, p);
     return r == 1;
@@ -154,7 +153,7 @@ btree_insert_nonfull(Tree* t, Node* n, uint64_t key)
             n->key[i] = n->key[i - 1];
             i--;
         }
-        n->key[i] = key;
+        n->key[i+1] = key;
         n->nodes++;
         disk_write(t->idx, n->pos, n);
     } else {
@@ -169,7 +168,3 @@ btree_insert_nonfull(Tree* t, Node* n, uint64_t key)
         btree_insert_nonfull(t, next, key);
     }
 }
-/*bool disk_write_index(FILE *p, size_t pos, Node *n) {*/
-/*size_t r = fwrite(n, sizeof(Node), 1, p);*/
-/*return r == sizeof(Node);*/
-/*}*/

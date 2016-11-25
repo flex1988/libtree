@@ -3,7 +3,7 @@ all: btree
 btree.o:btree.c btree.h
 
 btree:btree.o
-	gcc -g -O2 -Wall -o btree btree_test.c btree.o
+	gcc -g -Wall -o btree btree_test.c btree.o
 
 clean:
 	rm *.o btree
